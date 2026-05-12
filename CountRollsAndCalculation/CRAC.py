@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 discord_token = str(os.getenv("DISCORD_BOT_TOKEN"))
@@ -29,6 +30,7 @@ async def rolecalc(
     kane: int,
     role: discord.Role
     ):
+    current_channel_id = interaction.channel_id
     await interaction.response.send_message("実行確認。埋め込み出力します。", ephemeral=True)
     def umekomi(kane,role):
         count = len(role.members)
@@ -44,7 +46,24 @@ async def rolecalc(
         embed.add_field(name="整数計算", value=f"{zatsu_one_money}円/1人", inline=False)
     my_embed = umekomi(kane,role)
     await interaction.edit_original_response(content=None, embed=my_embed)
+    message = await interaction.original_response()
+    msg_id = message.id
+    
 
+def save_data(ch_id,ms_id):
+    data = {
+        "message_id": ms_id,
+        "channel_id": ch_id
+    }
+    with open("config.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+def load_data():
+    try:
+        with open("config.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
 
 
 client.run(discord_token)
