@@ -7,7 +7,7 @@ import json
 
 load_dotenv()
 discord_token = str(os.getenv("DISCORD_BOT_TOKEN"))
-guild_id = os.getenv("Server_ID")
+guild_id = discord.Object(id=int(os.getenv("Server_ID")))
 admin_roll = os.getenv("AdminRoll_ID")
 
 intents = discord.Intents.default()
@@ -15,14 +15,10 @@ intents.members = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-@client.event
-async def on_ready():
-    print('ログインしました')
-    await tree.sync(guild=discord.Object(id=int(guild_id)))
-
 @tree.command(
     name = "start_roll_calc",
-    description = "ロール人数からの計算を始めます。"
+    description = "ロール人数からの計算を始めます。",
+    guilds=[guild_id]
 )
 @app_commands.checks.has_role(int(admin_roll))
 async def rolecalc(
@@ -44,8 +40,9 @@ async def rolecalc(
         embed.add_field(name="現時点参加予定人数", value=f"{count}人", inline=False)
         embed.add_field(name="精密計算", value=f"{one_money}円/1人", inline=False)
         embed.add_field(name="整数計算", value=f"{zatsu_one_money}円/1人", inline=False)
+        return embed
     my_embed = umekomi(kane,role)
-    await interaction.edit_original_response(content=None, embed=my_embed)
+    await interaction.followup.send(embed=my_embed, ephemeral=False)
     message = await interaction.original_response()
     msg_id = message.id
     
@@ -65,5 +62,10 @@ def load_data():
     except FileNotFoundError:
         return None
 
+
+@client.event
+async def on_ready():
+    print('ログインしました')
+    await tree.sync(guild=guild_id)
 
 client.run(discord_token)
