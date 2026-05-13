@@ -8,15 +8,30 @@ import json
 load_dotenv()
 discord_token = str(os.getenv("DISCORD_BOT_TOKEN"))
 guild_id = discord.Object(id=int(os.getenv("Server_ID")))
-admin_roll = os.getenv("AdminRoll_ID")
+admin_role = os.getenv("AdminRole_ID")
 
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
+def save_data(ch_id,ms_id):
+    data = {
+        "message_id": ms_id,
+        "channel_id": ch_id
+    }
+    with open("config.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+def load_data():
+    try:
+        with open("config.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
+
 @tree.command(
-    name = "start_roll_calc",
+    name = "start_role_calc",
     description = "ロール人数からの計算を始めます。",
     guilds=[guild_id]
 )
@@ -45,22 +60,16 @@ async def rolecalc(
     await interaction.followup.send(embed=my_embed, ephemeral=False)
     message = await interaction.original_response()
     msg_id = message.id
-    
+    save_data(current_channel_id,msg_id)
 
-def save_data(ch_id,ms_id):
-    data = {
-        "message_id": ms_id,
-        "channel_id": ch_id
-    }
-    with open("config.json", "w") as f:
-        json.dump(data, f, indent=4)
+@tree.command(
+    name = "update_rc_embed",
+    description = "送信した埋め込みを更新します。",
+    guilds = [guild_id]
+)
+@app_commands.checks.has_role(int(admin_role))
+async def updaterolecalc
 
-def load_data():
-    try:
-        with open("config.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return None
 
 
 @client.event
