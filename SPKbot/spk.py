@@ -57,7 +57,7 @@ async def spk(
 
 @client.event
 async def on_ready():
-    print('ログインしました')
+    print('spk activate now!')
     await tree.sync()
 
 client.run(discord_token)
