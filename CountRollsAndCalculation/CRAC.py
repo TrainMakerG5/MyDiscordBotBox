@@ -35,7 +35,7 @@ def load_data():
     description = "ロール人数からの計算を始めます。",
     guilds=[guild_id]
 )
-@app_commands.checks.has_role(int(admin_roll))
+@app_commands.checks.has_role(int(admin_role))
 async def rolecalc(
     interaction: discord.Interaction,
     kane: int,
@@ -68,9 +68,21 @@ async def rolecalc(
     guilds = [guild_id]
 )
 @app_commands.checks.has_role(int(admin_role))
-async def updaterolecalc
-
-
+async def updaterolecalc(
+    interaction: discord.Integration,
+    kane: int,
+    role: discord.Role
+):
+    await interaction.response.send_message("実行確認。埋め込みを更新します。", ephemeral=True)
+    try:
+        data = load_data()
+        msg_id = data["message_id"]
+        ch_id = client.get_channel(int(data["channel_id"]))
+        target_message = await ch_id.fetch_message(int(msg_id))
+        new_embed = umekomi(kane,role)
+        await target_message.edit(embed=new_embed)
+    except Exception as e:
+        print(f"Error! {e}\nターゲットMSG:")
 
 @client.event
 async def on_ready():
