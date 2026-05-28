@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import random
 
+count = 0
 load_dotenv()
 discord_token = str(os.getenv("DISCORD_BOT_TOKEN"))
 
@@ -49,6 +50,7 @@ async def spk(
     mode: int,
     dakuten: int
 ):
+    print(f"spk running mode:{mode} daku:{dakuten}")
     if mode == 1:
         speak = spkAll(dakuten)
     else:
@@ -59,5 +61,6 @@ async def spk(
 async def on_ready():
     print('spk activate now!')
     await tree.sync()
+    count = 0
 
 client.run(discord_token)
