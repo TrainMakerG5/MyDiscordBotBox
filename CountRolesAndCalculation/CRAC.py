@@ -42,7 +42,7 @@ async def rolecalc(
     role: discord.Role
     ):
     current_channel_id = interaction.channel_id
-    await interaction.response.send_message("実行確認。埋め込み出力します。", ephemeral=True)
+    await interaction.response.send_message("実行確認。埋め込みを出力します。", ephemeral=True)
     def umekomi(kane,role):
         count = len(role.members)
         one_money = kane / count
